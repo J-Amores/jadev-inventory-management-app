@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model InventoryItem {
+  id                String   @id @default(uuid())
+  name              String
+  sku               String   @unique
+  category          String
+  quantity          Int
+  price             Float
+  description       String   @db.Text
+  lastUpdated       DateTime @default(now())
+  lowStockThreshold Int
+  rating            Float
+  image             String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([category])
+  @@index([sku])
+}
+
+enum UserRole {
+  ADMIN
+  STAFF
+  VIEWER
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id        String     @id @default(uuid())
+  userId    String     @unique
+  name      String
+  email     String     @unique
+  role      UserRole
+  status    UserStatus
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([email])
+}
+
+model SalesSummary {
+  id               String   @id @default(uuid())
+  salesSummaryId   String   @unique
+  totalValue       Float
+  changePercentage Float
+  date             DateTime
+  createdAt        DateTime @default(now())
+
+  @@index([date])
+}
+
+model Expense {
+  id         String   @id @default(uuid())
+  expenseId  String   @unique
+  category   String
+  amount     Float
+  timestamp  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([timestamp])
+}
