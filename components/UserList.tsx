@@ -7,6 +7,7 @@ interface User {
   userId: string;
   name: string;
   email: string;
+  avatar?: string;
   role: 'Admin' | 'Staff' | 'Viewer';
   status: 'Active' | 'Inactive';
 }
@@ -79,9 +80,17 @@ export default function UserList() {
               <tr key={user.userId} className="hover:bg-slate-50/80 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-                        {user.name.substring(0, 1)}
-                    </div>
+                    {user.avatar ? (
+                      <img
+                        src={user.avatar}
+                        alt={user.name}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-indigo-100"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
+                          {user.name.substring(0, 1)}
+                      </div>
+                    )}
                     <div>
                         <div className="font-medium text-slate-800">{user.name}</div>
                         <div className="text-xs text-slate-500 font-mono">{user.userId.substring(0,8)}...</div>

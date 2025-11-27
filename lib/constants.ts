@@ -1,11 +1,11 @@
-// Categories for the Plant/Nursery theme
+// Categories for shoe types
 export const CATEGORIES = [
-  'Flowers',
-  'Succulents',
-  'Shrubs',
-  'Trees',
-  'Herbs',
-  'Climbers',
-  'Ferns',
-  'Ground Cover',
+  'Sneakers',
+  'Boots',
+  'Sandals',
+  'Loafers',
+  'Running Shoes',
+  'Dress Shoes',
+  'High Heels',
+  'Flats',
 ] as const;

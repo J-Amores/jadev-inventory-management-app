@@ -46,6 +46,7 @@ model User {
   userId    String     @unique
   name      String
   email     String     @unique
+  avatar    String?
   role      UserRole
   status    UserStatus
   createdAt DateTime   @default(now())

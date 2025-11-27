@@ -21,7 +21,7 @@ export default function Sidebar() {
         <div className="bg-indigo-500 p-2 rounded-lg">
           <Box className="w-6 h-6 text-white" />
         </div>
-        <span className="hidden lg:block ml-3 font-bold text-lg tracking-tight">InventAI</span>
+        <span className="hidden lg:block ml-3 font-bold text-lg tracking-tight">Invent.IO</span>
       </div>
 
       <nav className="flex-1 py-6 px-3 space-y-2">

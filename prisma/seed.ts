@@ -2,23 +2,16 @@ import { PrismaClient, UserRole, UserStatus } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-// Categories for the Plant/Nursery theme
+// Categories for shoe types
 const CATEGORIES = [
-  'Flowers',
-  'Succulents',
-  'Shrubs',
-  'Trees',
-  'Herbs',
-  'Climbers',
-  'Ferns',
-  'Ground Cover',
-];
-
-// Product Images (Looping 3 as requested)
-const PRODUCT_IMAGES = [
-  'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?q=80&w=300&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?q=80&w=300&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?q=80&w=300&auto=format&fit=crop',
+  'Sneakers',
+  'Boots',
+  'Sandals',
+  'Loafers',
+  'Running Shoes',
+  'Dress Shoes',
+  'High Heels',
+  'Flats',
 ];
 
 // Deterministic category assignment
@@ -27,8 +20,28 @@ const getCategory = (id: string) => {
   return CATEGORIES[code % CATEGORIES.length];
 };
 
-const getImage = (index: number) => {
-  return PRODUCT_IMAGES[index % PRODUCT_IMAGES.length];
+// Get category-specific shoe image from Unsplash
+const getCategoryImage = (category: string, index: number) => {
+  // Use category as search term for Unsplash
+  const searchTerm = category.toLowerCase().replace(' ', '-');
+  // Use index to get variety within same category
+  const seed = index % 50; // Unsplash has various photos per search
+  return `https://images.unsplash.com/photo-${1500000000000 + seed}?auto=format&fit=crop&w=400&q=80&${searchTerm}`;
+};
+
+// Alternative: Use specific Unsplash photo IDs per category for consistency
+const getCategoryImageAlt = (category: string) => {
+  const categoryImages: Record<string, string> = {
+    'Sneakers': 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&auto=format&fit=crop',
+    'Boots': 'https://images.unsplash.com/photo-1608256246200-53e635b5b65f?w=400&auto=format&fit=crop',
+    'Sandals': 'https://images.unsplash.com/photo-1603487742131-4160ec999306?w=400&auto=format&fit=crop',
+    'Loafers': 'https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=400&auto=format&fit=crop',
+    'Running Shoes': 'https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&auto=format&fit=crop',
+    'Dress Shoes': 'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?w=400&auto=format&fit=crop',
+    'High Heels': 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=400&auto=format&fit=crop',
+    'Flats': 'https://images.unsplash.com/photo-1566150905458-1bf1fc113f0d?w=400&auto=format&fit=crop',
+  };
+  return categoryImages[category] || categoryImages['Sneakers'];
 };
 
 // Raw data from constants.ts
@@ -185,19 +198,22 @@ async function main() {
 
   // Seed Inventory Items
   console.log('📦 Seeding inventory items...');
-  const inventoryItems = RAW_PRODUCTS.map((p, index) => ({
-    id: p.productId,
-    name: p.name,
-    sku: `PLT-${p.productId.substring(0, 4).toUpperCase()}`,
-    category: getCategory(p.productId),
-    quantity: p.stockQuantity,
-    price: p.price,
-    description: `High quality ${p.name} sourced from premium growers. Rating: ${p.rating}/5.0`,
-    lastUpdated: new Date(),
-    lowStockThreshold: Math.floor(Math.random() * 50000) + 10000,
-    rating: p.rating,
-    image: getImage(index),
-  }));
+  const inventoryItems = RAW_PRODUCTS.map((p, index) => {
+    const category = getCategory(p.productId);
+    return {
+      id: p.productId,
+      name: p.name,
+      sku: `SHO-${p.productId.substring(0, 4).toUpperCase()}`,
+      category: category,
+      quantity: p.stockQuantity,
+      price: p.price,
+      description: `Premium ${p.name} - Comfortable, durable, and stylish footwear. Customer Rating: ${p.rating}/5.0`,
+      lastUpdated: new Date(),
+      lowStockThreshold: Math.floor(Math.random() * 50000) + 10000,
+      rating: p.rating,
+      image: getCategoryImageAlt(category),
+    };
+  });
 
   for (const item of inventoryItems) {
     await prisma.inventoryItem.create({ data: item });
@@ -210,6 +226,7 @@ async function main() {
     userId: user.userId,
     name: user.name,
     email: user.email,
+    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.email)}`,
     role: i === 0 ? UserRole.ADMIN : Math.random() > 0.7 ? UserRole.ADMIN : Math.random() > 0.4 ? UserRole.STAFF : UserRole.VIEWER,
     status: Math.random() > 0.1 ? UserStatus.ACTIVE : UserStatus.INACTIVE,
   }));

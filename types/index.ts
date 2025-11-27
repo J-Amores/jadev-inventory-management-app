@@ -18,6 +18,7 @@ export interface User {
   userId: string;
   name: string;
   email: string;
+  avatar?: string;
   role: 'ADMIN' | 'STAFF' | 'VIEWER';
   status: 'ACTIVE' | 'INACTIVE';
 }
