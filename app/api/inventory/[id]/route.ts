@@ -4,11 +4,12 @@ import { prisma } from '@/lib/db';
 // GET single item by id
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const item = await prisma.inventoryItem.findUnique({
-      where: { id: params.id }
+      where: { id }
     });
 
     if (!item) {
@@ -25,13 +26,14 @@ export async function GET(
 // PUT update item
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
 
     const item = await prisma.inventoryItem.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name: body.name,
         sku: body.sku,
@@ -56,11 +58,12 @@ export async function PUT(
 // DELETE item
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.inventoryItem.delete({
-      where: { id: params.id }
+      where: { id }
     });
 
     return NextResponse.json({ success: true });
